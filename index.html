@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Libros sin barreras facilita la búsqueda de libros electrónicos gratuitos, de dominio público o disponibles para préstamo digital.">
+  <meta name="theme-color" content="#123f67">
+  <title>Libros sin barreras | Busca eBooks gratuitos</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+    :root {
+      --fondo: #f8f4eb;
+      --superficie: #ffffff;
+      --suave: #e9f5f3;
+      --texto: #173047;
+      --secundario: #526273;
+      --azul: #123f67;
+      --turquesa: #087b79;
+      --turquesa-oscuro: #05605f;
+      --dorado: #d99412;
+      --borde: #d8e1df;
+      --sombra: 0 14px 34px rgba(18, 55, 82, 0.12);
+      --sombra-suave: 0 8px 22px rgba(18, 55, 82, 0.09);
+    }
+
+    body.modo-oscuro {
+      --fondo: #0c1d2b;
+      --superficie: #142f43;
+      --suave: #1b4650;
+      --texto: #ffffff;
+      --secundario: #d5e0e4;
+      --azul: #a4d1f5;
+      --turquesa: #7cdcd2;
+      --turquesa-oscuro: #b0eee7;
+      --dorado: #ffd36b;
+      --borde: #416574;
+      --sombra: 0 14px 34px rgba(0, 0, 0, 0.34);
+      --sombra-suave: 0 8px 22px rgba(0, 0, 0, 0.23);
+    }
+
+    body.alto-contraste {
+      --fondo: #000000;
+      --superficie: #000000;
+      --suave: #111111;
+      --texto: #ffffff;
+      --secundario: #ffffff;
+      --azul: #00ffff;
+      --turquesa: #ffff00;
+      --turquesa-oscuro: #ffff00;
+      --dorado: #ffff00;
+      --borde: #ffffff;
+      --sombra: none;
+      --sombra-suave: none;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--fondo);
+      color: var(--texto);
+      font-family: "DM Sans", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    button, input, a { font: inherit; }
+    button { cursor: pointer; }
+
+    button:focus-visible,
+    input:focus-visible,
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 4px solid var(--dorado);
+      outline-offset: 3px;
+    }
+
+    .contenedor {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .encabezado {
+      min-height: 480px;
+      padding: 22px 0 118px;
+      color: #ffffff;
+      background:
+        linear-gradient(105deg, rgba(8, 44, 75, 0.98), rgba(18, 63, 103, 0.91) 50%, rgba(8, 123, 121, 0.70)),
+        url("https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1800&q=85") center/cover;
+    }
+
+    .barra, .presentacion { position: relative; z-index: 1; }
+
+    .barra {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .marca {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.16rem;
+    }
+
+    .icono-marca {
+      display: grid;
+      place-items: center;
+      width: 45px;
+      height: 45px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.4rem;
+    }
+
+    .herramientas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .boton-secundario,
+    .boton-principal,
+    .boton-enlace,
+    .boton-mas {
+      min-height: 44px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .boton-secundario {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.75);
+      background: rgba(0, 0, 0, 0.20);
+    }
+
+    .boton-secundario:hover,
+    .boton-principal:hover,
+    .boton-enlace:hover,
+    .boton-mas:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .presentacion {
+      max-width: 790px;
+      padding-top: 70px;
+    }
+
+    .etiqueta {
+      display: inline-flex;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.20);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    h1, h2, h3 { text-wrap: balance; }
+
+    h1 {
+      margin: 18px 0 15px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(2.5rem, 5.4vw, 4.9rem);
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+    }
+
+    .presentacion p {
+      max-width: 690px;
+      margin: 0;
+      font-size: clamp(1.02rem, 2vw, 1.24rem);
+    }
+
+    .zona-busqueda {
+      position: relative;
+      z-index: 2;
+      margin-top: -55px;
+    }
+
+    .busqueda {
+      padding: 26px;
+      border: 1px solid var(--borde);
+      border-radius: 20px;
+      background: var(--superficie);
+      box-shadow: var(--sombra);
+    }
+
+    .busqueda h2 {
+      margin: 0 0 12px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 1.62rem;
+    }
+
+    .formulario {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      min-height: 56px;
+      padding: 13px 16px;
+      border: 2px solid var(--borde);
+      border-radius: 12px;
+      background: var(--superficie);
+      color: var(--texto);
+    }
+
+    input::placeholder { color: var(--secundario); }
+
+    .boton-principal {
+      min-width: 154px;
+      background: var(--turquesa);
+      color: #ffffff;
+    }
+
+    body.alto-contraste .boton-principal,
+    body.alto-contraste .boton-enlace,
+    body.alto-contraste .boton-mas { color: #000000; }
+
+    .ayuda {
+      margin: 11px 0 0;
+      color: var(--secundario);
+      font-size: 0.94rem;
+    }
+
+    main { padding: 46px 0 60px; }
+
+    .proposito,
+    .informacion-proyecto {
+      padding: 28px;
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      background: var(--superficie);
+      box-shadow: var(--sombra-suave);
+    }
+
+    .proposito {
+      margin-bottom: 24px;
+      border-left: 6px solid var(--dorado);
+      border-radius: 4px 18px 18px 4px;
+    }
+
+    .proposito h2,
+    .encabezado-resultados h2,
+    .informacion-proyecto h2,
+    .recursos h2,
+    .llamado h2 {
+      font-family: "Playfair Display", Georgia, serif;
+    }
+
+    .proposito h2,
+    .informacion-proyecto h2 {
+      margin: 0 0 10px;
+      font-size: 1.9rem;
+    }
+
+    .proposito p,
+    .encabezado-proyecto p {
+      max-width: 870px;
+      margin: 0;
+      color: var(--secundario);
+    }
+
+    .informacion-proyecto { margin-bottom: 42px; }
+
+    .sobrelinea {
+      margin: 0 0 6px;
+      color: var(--turquesa-oscuro);
+      font-size: 0.84rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .encabezado-proyecto {
+      max-width: 850px;
+      margin-bottom: 20px;
+    }
+
+    .acordeon {
+      display: grid;
+      gap: 10px;
+    }
+
+    .acordeon details {
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 0 16px;
+      background: var(--superficie);
+    }
+
+    .acordeon summary {
+      padding: 14px 0;
+      color: var(--texto);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .acordeon p,
+    .acordeon ol {
+      margin: 0 0 16px;
+      color: var(--secundario);
+    }
+
+    .acordeon ol { padding-left: 22px; }
+    .acordeon li { margin-bottom: 8px; }
+
+    .encabezado-resultados { margin-bottom: 15px; }
+
+    .encabezado-resultados h2 {
+      margin: 0;
+      font-size: 2.05rem;
+    }
+
+    #estado {
+      margin: 4px 0 0;
+      color: var(--secundario);
+    }
+
+    .resultados {
+      display: grid;
+      gap: 16px;
+    }
+
+    .libro {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      gap: 18px;
+      padding: 17px;
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      background: var(--superficie);
+      box-shadow: var(--sombra-suave);
+    }
+
+    .portada,
+    .portada-vacia {
+      width: 104px;
+      height: 148px;
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .portada-vacia {
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      background: linear-gradient(145deg, var(--suave), var(--superficie));
+      color: var(--azul);
+      text-align: center;
+      font-size: 2.2rem;
+    }
+
+    .libro h3 {
+      margin: 3px 0 7px;
+      font-size: 1.26rem;
+    }
+
+    .metadato {
+      margin: 4px 0;
+      color: var(--secundario);
+    }
+
+    .fuente {
+      display: inline-block;
+      margin: 9px 0 13px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--suave);
+      color: var(--turquesa-oscuro);
+      font-size: 0.83rem;
+      font-weight: 800;
+    }
+
+    .acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .boton-enlace {
+      display: inline-flex;
+      align-items: center;
+      background: var(--turquesa);
+      color: #ffffff;
+    }
+
+    .boton-enlace.secundario {
+      background: transparent;
+      border-color: var(--borde);
+      color: var(--texto);
+    }
+
+    .zona-mas-resultados {
+      display: flex;
+      justify-content: center;
+      padding: 24px 0 4px;
+    }
+
+    .boton-mas {
+      display: none;
+      background: var(--azul);
+      color: #ffffff;
+    }
+
+    .boton-mas:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .recursos { margin-top: 55px; }
+
+    .recursos h2 {
+      margin-bottom: 7px;
+      font-size: 2.08rem;
+    }
+
+    .recursos > p {
+      max-width: 760px;
+      margin-top: 0;
+      color: var(--secundario);
+    }
+
+    .rejilla {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .recurso {
+      position: relative;
+      min-height: 245px;
+      padding: 24px;
+      overflow: hidden;
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      background: var(--superficie);
+      box-shadow: var(--sombra-suave);
+    }
+
+    .recurso::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 7px;
+      background: linear-gradient(90deg, var(--turquesa), var(--dorado));
+    }
+
+    .recurso h3 {
+      margin: 12px 0 9px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 1.34rem;
+    }
+
+    .recurso p {
+      margin: 0 0 18px;
+      color: var(--secundario);
+    }
+
+    .recurso a {
+      color: var(--turquesa-oscuro);
+      font-weight: 800;
+    }
+
+    .pago {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #fff1ca;
+      color: #805400;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .llamado {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 22px;
+      align-items: center;
+      margin-top: 54px;
+      padding: 31px;
+      border-radius: 21px;
+      color: #ffffff;
+      background: linear-gradient(115deg, var(--azul), var(--turquesa));
+      box-shadow: var(--sombra);
+    }
+
+    .llamado h2 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .llamado p {
+      max-width: 680px;
+      margin: 0;
+    }
+
+    .llamado a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 11px 16px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #123a59;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    footer {
+      padding: 30px 0;
+      border-top: 1px solid var(--borde);
+      background: var(--superficie);
+      color: var(--secundario);
+      text-align: center;
+    }
+
+    .oculto { display: none; }
+
+    @media (max-width: 780px) {
+      .barra,
+      .formulario,
+      .llamado {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .herramientas { justify-content: flex-start; }
+      .boton-principal { width: 100%; }
+      .rejilla { grid-template-columns: 1fr; }
+      .llamado a { width: 100%; }
+    }
+
+    @media (max-width: 520px) {
+      .contenedor { width: min(100% - 24px, 1120px); }
+      .encabezado { min-height: 460px; padding-bottom: 100px; }
+      .presentacion { padding-top: 48px; }
+      .boton-secundario { padding: 8px 10px; font-size: 0.87rem; }
+      .libro { grid-template-columns: 78px 1fr; gap: 12px; }
+      .portada, .portada-vacia { width: 78px; height: 113px; }
+      .busqueda, .proposito, .informacion-proyecto, .recurso { padding: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="encabezado">
+    <div class="contenedor">
+      <div class="barra">
+        <a class="marca" href="#inicio" aria-label="Ir al inicio de Libros sin barreras">
+          <span class="icono-marca" aria-hidden="true">📚</span>
+          <span>Libros sin barreras</span>
+        </a>
+
+        <div class="herramientas" aria-label="Opciones de accesibilidad">
+          <button class="boton-secundario" id="boton-oscuro" type="button">◐ Modo oscuro</button>
+          <button class="boton-secundario" id="boton-contraste" type="button">◑ Alto contraste</button>
+          <button class="boton-secundario" id="boton-texto" type="button">A+ Texto grande</button>
+        </div>
+      </div>
+
+      <section class="presentacion" id="inicio">
+        <span class="etiqueta">✦ Lectura gratuita · Acceso abierto</span>
+        <h1>Los libros gratuitos también abren grandes caminos.</h1>
+        <p>Busca libros electrónicos gratuitos, de dominio público o disponibles para préstamo digital en fuentes confiables.</p>
+      </section>
+    </div>
+  </header>
+
+  <div class="zona-busqueda">
+    <section class="contenedor">
+      <div class="busqueda">
+        <h2>¿Qué quieres leer hoy?</h2>
+        <form class="formulario" id="formulario-busqueda">
+          <label class="oculto" for="search">Título, autor o tema</label>
+          <input id="search" type="search" placeholder="Ejemplo: Don Quijote, Sherlock Holmes, poesía..." autocomplete="off" required>
+          <button class="boton-principal" type="submit">Buscar libros</button>
+        </form>
+        <p class="ayuda">La búsqueda muestra resultados de Project Gutenberg y Open Library. Revisa en cada resultado si el acceso es lectura gratuita, préstamo o consulta bibliográfica.</p>
+      </div>
+    </section>
+  </div>
+
+  <main class="contenedor">
+    <section class="proposito" aria-label="Introducción breve">
+      <h2>Lectura abierta, búsqueda sencilla</h2>
+      <p>Libros sin barreras es un portal que orienta la búsqueda de eBooks gratuitos, de dominio público o disponibles mediante préstamo digital. No almacena ni comercializa obras: dirige al usuario hacia bibliotecas y repositorios confiables.</p>
+    </section>
+
+    <section class="informacion-proyecto" aria-labelledby="titulo-proyecto">
+      <div class="encabezado-proyecto">
+        <p class="sobrelinea">Conoce el proyecto</p>
+        <h2 id="titulo-proyecto">Un acceso más claro a la lectura digital</h2>
+        <p>Consulta la información académica y funcional de la propuesta sin interrumpir la búsqueda de libros.</p>
+      </div>
+
+      <div class="acordeon">
+        <details open>
+          <summary>Introducción</summary>
+          <p>Las bibliotecas digitales amplían el acceso a la lectura, pero también pueden dificultar la localización de obras cuando existen múltiples catálogos y condiciones de uso. Libros sin barreras reúne rutas de búsqueda hacia fuentes confiables para facilitar el acceso a textos gratuitos, de dominio público o disponibles para préstamo digital.</p>
+        </details>
+
+        <details>
+          <summary>Objetivo general</summary>
+          <p>Diseñar y desarrollar un portal web inclusivo que facilite la búsqueda y localización de libros electrónicos gratuitos, de dominio público o disponibles para préstamo digital, mediante enlaces a bibliotecas y repositorios confiables.</p>
+        </details>
+
+        <details>
+          <summary>Objetivos específicos</summary>
+          <ol>
+            <li>Identificar las necesidades básicas de los usuarios relacionadas con la búsqueda y localización de libros electrónicos gratuitos o disponibles para préstamo digital.</li>
+            <li>Diseñar una interfaz web clara y sencilla que permita buscar libros por título, autor o tema.</li>
+            <li>Integrar fuentes digitales que ofrezcan obras de dominio público, acceso gratuito o préstamo digital, indicando claramente el tipo de acceso.</li>
+          </ol>
+        </details>
+
+        <details>
+          <summary>¿Cómo funciona?</summary>
+          <p>Escribe el título, el autor o un tema. El portal consulta fuentes seleccionadas y presenta información bibliográfica, enlaces de lectura o descarga cuando estén disponibles. La disponibilidad final depende de los derechos y condiciones de cada fuente.</p>
+        </details>
+
+        <details>
+          <summary>Alcance y límites</summary>
+          <p>El portal permite buscar y orientar el acceso a recursos externos. No administra usuarios, préstamos propios, fechas de devolución ni archivos protegidos. Las bibliotecas enlazadas determinan la disponibilidad, el préstamo y las condiciones de uso de cada obra.</p>
+        </details>
+      </div>
+    </section>
+
+    <section aria-live="polite" aria-labelledby="titulo-resultados">
+      <div class="encabezado-resultados">
+        <h2 id="titulo-resultados">Resultados de búsqueda</h2>
+        <p id="estado">Escribe un título, autor o tema para comenzar.</p>
+      </div>
+      <div class="resultados" id="resultados"></div>
+      <div class="zona-mas-resultados">
+        <button class="boton-mas" id="boton-mas" type="button">Cargar más resultados</button>
+      </div>
+    </section>
+
+    <section class="recursos" aria-labelledby="titulo-recursos">
+      <h2 id="titulo-recursos">Otras bibliotecas y plataformas</h2>
+      <p>Estas fuentes complementan el buscador. Algunas ofrecen acceso abierto y otras requieren suscripción, compra o acceso institucional.</p>
+
+      <div class="rejilla">
+        <article class="recurso">
+          <h3>Wikisource</h3>
+          <p>Textos libres y obras de dominio público en español y otros idiomas.</p>
+          <a href="https://es.wikisource.org/" target="_blank" rel="noopener noreferrer">Explorar Wikisource →</a>
+        </article>
+        <article class="recurso">
+          <h3>Internet Archive</h3>
+          <p>Repositorio de textos, audios y materiales digitales; el acceso depende de cada obra.</p>
+          <a href="https://archive.org/details/texts" target="_blank" rel="noopener noreferrer">Explorar Internet Archive →</a>
+        </article>
+        <article class="recurso">
+          <h3>DOAB</h3>
+          <p>Directorio de libros académicos de acceso abierto.</p>
+          <a href="https://www.doabooks.org/" target="_blank" rel="noopener noreferrer">Explorar DOAB →</a>
+        </article>
+        <article class="recurso">
+          <span class="pago">Acceso institucional o de pago</span>
+          <h3>eLibro</h3>
+          <p>Libros académicos y profesionales mediante suscripción institucional.</p>
+          <a href="https://elibro.net/" target="_blank" rel="noopener noreferrer">Conocer eLibro →</a>
+        </article>
+        <article class="recurso">
+          <span class="pago">Acceso institucional o de pago</span>
+          <h3>OverDrive / Libby</h3>
+          <p>Préstamo digital para usuarios de bibliotecas afiliadas.</p>
+          <a href="https://www.overdrive.com/" target="_blank" rel="noopener noreferrer">Conocer OverDrive →</a>
+        </article>
+        <article class="recurso">
+          <span class="pago">Acceso institucional o de pago</span>
+          <h3>JSTOR</h3>
+          <p>Libros y revistas académicas, con acceso según suscripción.</p>
+          <a href="https://www.jstor.org/" target="_blank" rel="noopener noreferrer">Conocer JSTOR →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="llamado">
+      <div>
+        <h2>La lectura no debería tener barreras.</h2>
+        <p>Busca una obra, consulta los resultados y continúa tu recorrido lector desde una fuente confiable.</p>
+      </div>
+      <a href="#inicio">Ir al buscador ↑</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="contenedor">
+      <p>Libros sin barreras · Proyecto académico sin fines de lucro · Cada biblioteca enlazada establece sus propias condiciones de acceso.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const cuerpo = document.body;
+      const formulario = document.getElementById("formulario-busqueda");
+      const campo = document.getElementById("search");
+      const resultados = document.getElementById("resultados");
+      const estado = document.getElementById("estado");
+      const botonMas = document.getElementById("boton-mas");
+
+      const estadoBusqueda = {
+        consulta: "",
+        termino: "",
+        offsetOpenLibrary: 0,
+        siguienteGutendex: null,
+        hayMasOpenLibrary: false,
+        hayMasGutendex: false,
+        cargando: false
+      };
+
+      function escapar(valor) {
+        return String(valor || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function normalizar(texto) {
+        return texto
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLowerCase();
+      }
+
+      function crearLibro(libro) {
+        const portada = libro.portada
+          ? `<img class="portada" src="${escapar(libro.portada)}" alt="Portada de ${escapar(libro.titulo)}" loading="lazy">`
+          : `<div class="portada-vacia" aria-label="Portada no disponible">${libro.icono || "📚"}</div>`;
+
+        return `
+          <article class="libro">
+            ${portada}
+            <div>
+              <h3>${escapar(libro.titulo)}</h3>
+              <p class="metadato"><strong>Autor:</strong> ${escapar(libro.autor || "No disponible")}</p>
+              ${libro.fecha ? `<p class="metadato"><strong>Año:</strong> ${escapar(libro.fecha)}</p>` : ""}
+              <span class="fuente">${escapar(libro.fuente)}</span>
+              <div class="acciones">
+                <a class="boton-enlace" href="${escapar(libro.enlace)}" target="_blank" rel="noopener noreferrer">Leer o consultar</a>
+                ${libro.ficha ? `<a class="boton-enlace secundario" href="${escapar(libro.ficha)}" target="_blank" rel="noopener noreferrer">Ver ficha</a>` : ""}
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function actualizarBotonMas() {
+        const hayMas = estadoBusqueda.hayMasOpenLibrary || estadoBusqueda.hayMasGutendex;
+
+        if (hayMas) {
+          botonMas.style.display = "inline-flex";
+          botonMas.disabled = false;
+          botonMas.textContent = "Cargar más resultados";
+        } else {
+          botonMas.style.display = "none";
+          botonMas.disabled = true;
+        }
+      }
+
+      function transformarGutenberg(datos) {
+        const libros = (datos.results || []).slice(0, 8);
+        estadoBusqueda.siguienteGutendex = datos.next || null;
+        estadoBusqueda.hayMasGutendex = Boolean(datos.next);
+
+        return libros.map(function (libro) {
+          const formatos = libro.formats || {};
+          const enlaceLectura =
+            formatos["text/html"] ||
+            formatos["application/epub+zip"] ||
+            formatos["text/plain; charset=utf-8"] ||
+            "https://www.gutenberg.org/ebooks/" + libro.id;
+
+          return crearLibro({
+            titulo: libro.title || "Título no disponible",
+            autor: libro.authors && libro.authors.length
+              ? libro.authors.map(function (autor) { return autor.name; }).join(", ")
+              : "Autor no disponible",
+            portada: formatos["image/jpeg"] || "",
+            fuente: "Project Gutenberg · Lectura o descarga gratuita",
+            enlace: enlaceLectura,
+            ficha: "https://www.gutenberg.org/ebooks/" + libro.id,
+            icono: "📖"
+          });
+        });
+      }
+
+      function transformarOpenLibrary(datos) {
+        const libros = (datos.docs || []).slice(0, 8);
+        const total = Number(datos.numFound || 0);
+        estadoBusqueda.offsetOpenLibrary += libros.length;
+        estadoBusqueda.hayMasOpenLibrary = estadoBusqueda.offsetOpenLibrary < total && libros.length > 0;
+
+        return libros.map(function (libro) {
+          const acceso = libro.ebook_access === "borrowable"
+            ? "Open Library · Préstamo digital disponible"
+            : "Open Library · Consulta bibliográfica; revise disponibilidad";
+
+          return crearLibro({
+            titulo: libro.title || "Título no disponible",
+            autor: libro.author_name ? libro.author_name.join(", ") : "Autor no disponible",
+            fecha: libro.first_publish_year || "",
+            portada: libro.cover_i ? "https://covers.openlibrary.org/b/id/" + libro.cover_i + "-M.jpg" : "",
+            fuente: acceso,
+            enlace: libro.key ? "https://openlibrary.org" + libro.key : "https://openlibrary.org/",
+            icono: "📚"
+          });
+        });
+      }
+
+      async function consultarFuentes(esNuevaBusqueda) {
+        if (estadoBusqueda.cargando) return;
+        estadoBusqueda.cargando = true;
+        botonMas.disabled = true;
+
+        if (esNuevaBusqueda) {
+          estado.textContent = "Buscando libros y opciones de acceso...";
+        } else {
+          estado.textContent = "Cargando más resultados...";
+          botonMas.textContent = "Cargando...";
+        }
+
+        const solicitudes = [];
+
+        if (esNuevaBusqueda || estadoBusqueda.hayMasGutendex) {
+          const urlGutendex = esNuevaBusqueda
+            ? "https://gutendex.com/books?search=" + estadoBusqueda.termino
+            : estadoBusqueda.siguienteGutendex;
+
+          solicitudes.push(
+            fetch(urlGutendex)
+              .then(function (respuesta) {
+                if (!respuesta.ok) throw new Error("No se pudo consultar Gutendex");
+                return respuesta.json();
+              })
+              .then(function (datos) { return { fuente: "gutendex", datos: datos }; })
+          );
+        }
+
+        if (esNuevaBusqueda || estadoBusqueda.hayMasOpenLibrary) {
+          const urlOpenLibrary = "https://openlibrary.org/search.json?q=" +
+            estadoBusqueda.termino +
+            "&limit=8&offset=" +
+            estadoBusqueda.offsetOpenLibrary;
+
+          solicitudes.push(
+            fetch(urlOpenLibrary)
+              .then(function (respuesta) {
+                if (!respuesta.ok) throw new Error("No se pudo consultar Open Library");
+                return respuesta.json();
+              })
+              .then(function (datos) { return { fuente: "openlibrary", datos: datos }; })
+          );
+        }
+
+        const respuestas = await Promise.allSettled(solicitudes);
+        let nuevasTarjetas = [];
+        let resultadosNuevos = 0;
+
+        respuestas.forEach(function (respuesta) {
+          if (respuesta.status !== "fulfilled") return;
+
+          if (respuesta.value.fuente === "gutendex") {
+            const tarjetas = transformarGutenberg(respuesta.value.datos);
+            nuevasTarjetas = nuevasTarjetas.concat(tarjetas);
+            resultadosNuevos += tarjetas.length;
+          }
+
+          if (respuesta.value.fuente === "openlibrary") {
+            const tarjetas = transformarOpenLibrary(respuesta.value.datos);
+            nuevasTarjetas = nuevasTarjetas.concat(tarjetas);
+            resultadosNuevos += tarjetas.length;
+          }
+        });
+
+        if (esNuevaBusqueda) {
+          resultados.innerHTML = nuevasTarjetas.join("");
+        } else {
+          resultados.insertAdjacentHTML("beforeend", nuevasTarjetas.join(""));
+        }
+
+        if (resultadosNuevos === 0 && esNuevaBusqueda) {
+          estado.textContent = "No se encontraron resultados automáticos para esta búsqueda.";
+        } else if (resultadosNuevos === 0) {
+          estado.textContent = "No hay más resultados disponibles para esta búsqueda.";
+          estadoBusqueda.hayMasOpenLibrary = false;
+          estadoBusqueda.hayMasGutendex = false;
+        } else if (estadoBusqueda.hayMasOpenLibrary || estadoBusqueda.hayMasGutendex) {
+          estado.textContent = "Se mostraron resultados. Puedes cargar más si deseas continuar explorando.";
+        } else {
+          estado.textContent = "Se mostraron todos los resultados disponibles en esta consulta.";
+        }
+
+        estadoBusqueda.cargando = false;
+        actualizarBotonMas();
+      }
+
+      formulario.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+        const consulta = campo.value.trim();
+
+        if (!consulta) {
+          estado.textContent = "Escribe un título, autor o tema antes de buscar.";
+          campo.focus();
+          return;
+        }
+
+        estadoBusqueda.consulta = consulta;
+        estadoBusqueda.termino = encodeURIComponent(normalizar(consulta));
+        estadoBusqueda.offsetOpenLibrary = 0;
+        estadoBusqueda.siguienteGutendex = null;
+        estadoBusqueda.hayMasOpenLibrary = true;
+        estadoBusqueda.hayMasGutendex = true;
+        resultados.innerHTML = `<article class="proposito"><p>Consultando Project Gutenberg y Open Library. Esto puede tardar unos segundos.</p></article>`;
+        botonMas.style.display = "none";
+
+        consultarFuentes(true).catch(function (error) {
+          console.error(error);
+          estadoBusqueda.cargando = false;
+          estadoBusqueda.hayMasOpenLibrary = false;
+          estadoBusqueda.hayMasGutendex = false;
+          actualizarBotonMas();
+          estado.textContent = "No fue posible cargar resultados automáticos. Intenta nuevamente más tarde.";
+          resultados.innerHTML = "";
+        });
+      });
+
+      botonMas.addEventListener("click", function () {
+        consultarFuentes(false).catch(function (error) {
+          console.error(error);
+          estadoBusqueda.cargando = false;
+          actualizarBotonMas();
+          estado.textContent = "No fue posible cargar más resultados. Puedes intentarlo de nuevo.";
+        });
+      });
+
+      document.getElementById("boton-oscuro").addEventListener("click", function () {
+        cuerpo.classList.toggle("modo-oscuro");
+        cuerpo.classList.remove("alto-contraste");
+        localStorage.setItem("temaLibrosSinBarreras", cuerpo.className);
+      });
+
+      document.getElementById("boton-contraste").addEventListener("click", function () {
+        cuerpo.classList.toggle("alto-contraste");
+        cuerpo.classList.remove("modo-oscuro");
+        localStorage.setItem("temaLibrosSinBarreras", cuerpo.className);
+      });
+
+      document.getElementById("boton-texto").addEventListener("click", function () {
+        cuerpo.style.fontSize = cuerpo.style.fontSize === "120%" ? "100%" : "120%";
+        localStorage.setItem("tamanoTextoLibrosSinBarreras", cuerpo.style.fontSize);
+      });
+
+      const tema = localStorage.getItem("temaLibrosSinBarreras");
+      const tamano = localStorage.getItem("tamanoTextoLibrosSinBarreras");
+      if (tema) cuerpo.className = tema;
+      if (tamano) cuerpo.style.fontSize = tamano;
+    })();
+  </script>
+</body>
+</html>
